@@ -4,19 +4,28 @@
 //
 
 #import "WeatherForTheCityTableViewController.h"
+#import "AFNetworking/AFHTTPSessionManager.h"
+
 
 @interface WeatherForTheCityTableViewController ()
-
+@property (nonatomic, strong) NSArray *weatherForCities;
 @end
 
 @implementation WeatherForTheCityTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
 }
 
 #pragma mark - Table view data source
+
+- (NSArray *)weatherForCities
+{
+    if (!_weatherForCities) {
+        _weatherForCities = [[NSArray alloc] init];
+    }
+    return _weatherForCities;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -25,7 +34,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 0;
+    return [self.weatherForCities count];
 }
+
 
 @end
