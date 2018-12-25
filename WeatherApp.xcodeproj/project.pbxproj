@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		D53378DD21D221D40024D6FE /* WeatherForCitiesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D53378DC21D221D40024D6FE /* WeatherForCitiesTableViewController.m */; };
 		D53378E021D2223E0024D6FE /* WeatherForTheCityTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D53378DF21D2223E0024D6FE /* WeatherForTheCityTableViewController.m */; };
+		D53378E321D225D10024D6FE /* UIKit+AFNetworking in Resources */ = {isa = PBXBuildFile; fileRef = D53378E121D225D00024D6FE /* UIKit+AFNetworking */; };
+		D53378E421D225D10024D6FE /* AFNetworking in Resources */ = {isa = PBXBuildFile; fileRef = D53378E221D225D00024D6FE /* AFNetworking */; };
 		D5C31A4921D2070800FE38D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D5C31A4821D2070800FE38D1 /* AppDelegate.m */; };
 		D5C31A4F21D2070800FE38D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5C31A4D21D2070800FE38D1 /* Main.storyboard */; };
 		D5C31A5121D2070A00FE38D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5C31A5021D2070A00FE38D1 /* Assets.xcassets */; };
@@ -21,6 +23,8 @@
 		D53378DC21D221D40024D6FE /* WeatherForCitiesTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeatherForCitiesTableViewController.m; sourceTree = "<group>"; };
 		D53378DE21D2223E0024D6FE /* WeatherForTheCityTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeatherForTheCityTableViewController.h; sourceTree = "<group>"; };
 		D53378DF21D2223E0024D6FE /* WeatherForTheCityTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeatherForTheCityTableViewController.m; sourceTree = "<group>"; };
+		D53378E121D225D00024D6FE /* UIKit+AFNetworking */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "UIKit+AFNetworking"; sourceTree = "<group>"; };
+		D53378E221D225D00024D6FE /* AFNetworking */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AFNetworking; sourceTree = "<group>"; };
 		D5C31A4421D2070800FE38D1 /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C31A4721D2070800FE38D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D5C31A4821D2070800FE38D1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -61,6 +65,8 @@
 		D5C31A4621D2070800FE38D1 /* WeatherApp */ = {
 			isa = PBXGroup;
 			children = (
+				D53378E221D225D00024D6FE /* AFNetworking */,
+				D53378E121D225D00024D6FE /* UIKit+AFNetworking */,
 				D5C31A6021D2077700FE38D1 /* Config */,
 				D5C31A5F21D2075B00FE38D1 /* Model */,
 				D5C31A5E21D2073A00FE38D1 /* UI */,
@@ -159,6 +165,8 @@
 			files = (
 				D5C31A5421D2070A00FE38D1 /* LaunchScreen.storyboard in Resources */,
 				D5C31A5121D2070A00FE38D1 /* Assets.xcassets in Resources */,
+				D53378E321D225D10024D6FE /* UIKit+AFNetworking in Resources */,
+				D53378E421D225D10024D6FE /* AFNetworking in Resources */,
 				D5C31A4F21D2070800FE38D1 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
