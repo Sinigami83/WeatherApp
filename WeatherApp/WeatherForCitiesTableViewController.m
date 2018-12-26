@@ -4,8 +4,10 @@
 //
 
 #import "WeatherForCitiesTableViewController.h"
-#import "Model/ServerManager.h"
-#import "Model/Model.h"
+#import "ServerManager.h"
+#import "Model.h"
+#import "UIImageView+AFNetworking.h"
+
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) NSArray<Model *> *weatherForCities;
@@ -19,7 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.cityNameTextField.text = @"Tashkent";
+    self.cityNameTextField.text = @"London";
     [self find];
 }
 
@@ -65,9 +67,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", self.weatherForCities[indexPath.row].temerature,
-                           self.weatherForCities[indexPath.row].hour];
+    Model *weather = self.weatherForCities[indexPath.row];
 
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %lu", weather.temerature, weather.hour];
+    [cell.imageView setImageWithURL:weather.image];
     return cell;
 }
 

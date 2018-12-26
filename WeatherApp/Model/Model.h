@@ -9,7 +9,7 @@
 @interface Model : NSObject
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSNumber *temerature;
-@property (nonatomic, strong) NSDate *hour;
+@property (nonatomic, assign) NSUInteger hour;
 @property (nonatomic, strong) NSURL *image;
 
 - (instancetype)initWithServerResponse:(NSDictionary *)responseObject;
