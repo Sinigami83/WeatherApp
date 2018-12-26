@@ -50,10 +50,10 @@
     nil];
 
     [self.sessionManager
-    GET:@"forecast"
-    parameters:params
-    progress:nil
-    success:^(NSURLSessionTask *task, NSDictionary *responseObject) {
+     GET:@"forecast"
+     parameters:params
+     progress:nil
+     success:^(NSURLSessionTask *task, NSDictionary *responseObject) {
         NSLog(@"JSON: %@", responseObject);
         NSArray *weathers = [responseObject objectForKey:@"list"];
 
