@@ -13,7 +13,8 @@
 @property (nonatomic, strong) NSArray<Model *> *weatherForCities;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UITextField *cityNameTextField;
-@property (nonatomic, strong) NSMutableArray *indexPaths;
+@property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation WeatherForCitiesTableViewController
@@ -39,58 +40,69 @@
      onSuccess:^(NSArray *coutries) {
          self.weatherForCities = coutries;
 
-         //[self.tableView reloadData];
-
          self.indexPaths = [[NSMutableArray alloc] init];
          NSDate *lastDate = self.weatherForCities[0].date;
-         for (int i = 0, section = 0, row = 0; i < [self.weatherForCities count]; ++i) {
-             if ([self compareTwoDate:lastDate
-                           secondDate:self.weatherForCities[i].date] == NSOrderedAscending) {
+         for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
+             NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
+             if (ordererSet != NSOrderedSame) {
+                 [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
                  ++section;
-                 row = 0;
+                 row = 1;
                  lastDate = self.weatherForCities[i].date;
              } else {
                  ++row;
              }
-             [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
          }
-
+         /*
          [self.tableView performBatchUpdates:^{
              [self.tableView insertRowsAtIndexPaths:self.indexPaths withRowAnimation:UITableViewRowAnimationTop];
          } completion:^(BOOL finished) {
 
          }];
+         */
+         [self.tableView reloadData];
 
      } onFailure:^(NSError *error) {
-         NSLog(@"Error %@", [error localizedDescription]);
+          NSLog(@"Error %@", [error localizedDescription]);
      }];
 }
 
 #pragma mark - Table view data source
-/*
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return [self.indexPaths count];
 }
-*/
-/*
- - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
- {
- return ;
- }
- */
+
+- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSUInteger index = 0;
+    for (int i = 0; i < section; ++i) {
+        index += self.indexPaths[i].row;
+    }
+    self.dateFormatter = [[NSDateFormatter alloc] init];
+    self.dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_GB"];
+    self.dateFormatter.dateFormat = @"dd-MM-yyyy";
+    NSString *dateStr = [self.dateFormatter stringFromDate:self.weatherForCities[index].date];
+    return dateStr;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.weatherForCities count];
+    return self.indexPaths[section].row;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    Model *weather = self.weatherForCities[indexPath.row];
 
-    cell.textLabel.text = [NSString stringWithFormat:@"Temperatue - %@, hour - %lu", weather.temerature, weather.hour];
+    NSUInteger index = 0;
+    for (int i = 0; i < indexPath.section; ++i) {
+        index += self.indexPaths[i].row;
+    }
+
+    Model *weather = self.weatherForCities[index + indexPath.row];
+    cell.textLabel.text = [NSString stringWithFormat:@"Temperature : %@, hour : %lu", weather.temerature, weather.hour];
     [cell.imageView setImageWithURL:weather.image];
     return cell;
 }
@@ -119,8 +131,8 @@
 - (NSComparisonResult)compareTwoDate:(NSDate *)firstDate
             secondDate:(NSDate *)secondDate
 {
-    NSDateComponents *firstDateComponents = [self dayComponents: firstDate];
-    NSDateComponents *secondDateComponents = [self dayComponents: secondDate];
+    NSDateComponents *firstDateComponents   = [self dayComponents: firstDate];
+    NSDateComponents *secondDateComponents  = [self dayComponents: secondDate];
 
     NSUInteger firstDay     = [firstDateComponents day];
     NSUInteger secondDay    = [secondDateComponents day];
