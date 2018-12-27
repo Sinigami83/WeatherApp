@@ -47,6 +47,7 @@
     @"en",      @"lang",
     @"like",    @"type",
     city,       @"q",
+    //@"3",       @"cnt",
     nil];
 
     [self.sessionManager
@@ -74,29 +75,6 @@
             }
             NSLog(@"Error: %@", error);
         }];
-}
-
-#pragma mark - for compare
-
-- (NSDateComponents *)dayComponents:(NSDate *)date
-{
-    NSCalendar* calendar = [NSCalendar currentCalendar];
-    NSCalendarUnit flags = NSCalendarUnitDay;
-    NSDateComponents *todoYearMonthDayComponents = [calendar components:flags
-                                                               fromDate:date];
-    return todoYearMonthDayComponents;
-}
-
-- (BOOL)compareTwoDate:(NSDate *)firstDate
-            secondDate:(NSDate *)secondDate
-{
-    NSDateComponents *firstDateComponents = [self dayComponents: firstDate];
-    NSDateComponents *secondDateComponents = [self dayComponents: secondDate];
-
-    NSUInteger firstDay     = [firstDateComponents day];
-    NSUInteger secondDay    = [secondDateComponents day];
-
-    return (firstDay == secondDay);
 }
 
 @end

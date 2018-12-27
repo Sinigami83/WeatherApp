@@ -24,7 +24,6 @@
         NSString *numberInString = [numberFormatter stringFromNumber:temperature];
         _temerature = [numberFormatter numberFromString:numberInString];
 
-
         NSDateComponents *hourComponent = [[NSCalendar currentCalendar] components:NSCalendarUnitHour
                                                                           fromDate:_date];
         NSUInteger firstDay = [hourComponent hour];

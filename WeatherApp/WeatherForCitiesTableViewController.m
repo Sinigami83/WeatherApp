@@ -13,7 +13,7 @@
 @property (nonatomic, strong) NSArray<Model *> *weatherForCities;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UITextField *cityNameTextField;
-
+@property (nonatomic, strong) NSMutableArray *indexPaths;
 @end
 
 @implementation WeatherForCitiesTableViewController
@@ -39,7 +39,28 @@
      onSuccess:^(NSArray *coutries) {
          self.weatherForCities = coutries;
 
-         [self.tableView reloadData];
+         //[self.tableView reloadData];
+
+         self.indexPaths = [[NSMutableArray alloc] init];
+         NSDate *lastDate = self.weatherForCities[0].date;
+         for (int i = 0, section = 0, row = 0; i < [self.weatherForCities count]; ++i) {
+             if ([self compareTwoDate:lastDate
+                           secondDate:self.weatherForCities[i].date] == NSOrderedAscending) {
+                 ++section;
+                 row = 0;
+                 lastDate = self.weatherForCities[i].date;
+             } else {
+                 ++row;
+             }
+             [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+         }
+
+         [self.tableView performBatchUpdates:^{
+             [self.tableView insertRowsAtIndexPaths:self.indexPaths withRowAnimation:UITableViewRowAnimationTop];
+         } completion:^(BOOL finished) {
+
+         }];
+
      } onFailure:^(NSError *error) {
          NSLog(@"Error %@", [error localizedDescription]);
      }];
@@ -49,7 +70,7 @@
 /*
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.weatherForCities count];
+    return 3;
 }
 */
 /*
@@ -69,7 +90,7 @@
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     Model *weather = self.weatherForCities[indexPath.row];
 
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %lu", weather.temerature, weather.hour];
+    cell.textLabel.text = [NSString stringWithFormat:@"Temperatue - %@, hour - %lu", weather.temerature, weather.hour];
     [cell.imageView setImageWithURL:weather.image];
     return cell;
 }
@@ -82,6 +103,34 @@
         _weatherForCities = [[NSArray alloc] init];
     }
     return _weatherForCities;
+}
+
+#pragma mark - for compare
+
+- (NSDateComponents *)dayComponents:(NSDate *)date
+{
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit flags = NSCalendarUnitDay;
+    NSDateComponents *daysComponents = [calendar components:flags
+                                                   fromDate:date];
+    return daysComponents;
+}
+
+- (NSComparisonResult)compareTwoDate:(NSDate *)firstDate
+            secondDate:(NSDate *)secondDate
+{
+    NSDateComponents *firstDateComponents = [self dayComponents: firstDate];
+    NSDateComponents *secondDateComponents = [self dayComponents: secondDate];
+
+    NSUInteger firstDay     = [firstDateComponents day];
+    NSUInteger secondDay    = [secondDateComponents day];
+
+    if (firstDay == secondDay) {
+        return NSOrderedSame;
+    } else if (firstDay < secondDay) {
+        return NSOrderedAscending;
+    }
+    return NSOrderedDescending;
 }
 
 @end
