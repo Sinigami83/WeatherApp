@@ -7,12 +7,14 @@
 #import "ServerManager.h"
 #import "Model.h"
 #import "UIImageView+AFNetworking.h"
+#import "WeatherCollectionViewCell.h"
 
 
-@interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) NSArray<Model *> *weatherForCities;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UITextField *cityNameTextField;
+@property (nonatomic, strong) NSArray<Model *> *weatherForOneDay;
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
+@property (nonatomic, weak) IBOutlet UITextField *cityNameTextField;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
@@ -89,21 +91,44 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.indexPaths[section].row;
+    //return self.indexPaths[section].row;
+    return 1; 
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-
     NSUInteger index = 0;
     for (int i = 0; i < indexPath.section; ++i) {
         index += self.indexPaths[i].row;
     }
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    for (int i = 0; i < self.indexPaths[indexPath.section].row; ++i) {
+        [arr addObject:self.weatherForCities[index + i]];
+    }
+    self.weatherForOneDay = arr;
+    return cell;
 
+}
+
+#pragma mark - UICollectionViewDataSource
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return self.weatherForOneDay.count;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+    NSUInteger index = 0;
+    for (int i = 0; i < indexPath.section; ++i) {
+        index += self.indexPaths[i].row;
+    }
     Model *weather = self.weatherForCities[index + indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"Temperature : %@, hour : %lu", weather.temerature, weather.hour];
-    [cell.imageView setImageWithURL:weather.image];
+    NSString *day = [NSString localizedStringWithFormat:@"%lu", weather.hour];
+    cell.weatherForDayLabel.text = day;
+    //[cell.weatherIconImageView  setImageWithURL:weather.image];
+    cell.temperatureLable.text = [NSString stringWithFormat:@"%@ ℃", weather.temerature];
     return cell;
 }
 
@@ -129,7 +154,7 @@
 }
 
 - (NSComparisonResult)compareTwoDate:(NSDate *)firstDate
-            secondDate:(NSDate *)secondDate
+                          secondDate:(NSDate *)secondDate
 {
     NSDateComponents *firstDateComponents   = [self dayComponents: firstDate];
     NSDateComponents *secondDateComponents  = [self dayComponents: secondDate];
