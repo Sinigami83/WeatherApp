@@ -10,7 +10,7 @@
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSNumber *temerature;
 @property (nonatomic, assign) NSUInteger hour;
-@property (nonatomic, strong) NSURL *image;
+@property (nonatomic, strong) NSString *image;
 
 - (instancetype)initWithServerResponse:(NSDictionary *)responseObject;
 

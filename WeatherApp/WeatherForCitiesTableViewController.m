@@ -23,7 +23,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    [self.tableView reloadData];
     self.cityNameTextField.text = @"London";
     [self find];
 }
@@ -55,13 +55,7 @@
                  ++row;
              }
          }
-         /*
-         [self.tableView performBatchUpdates:^{
-             [self.tableView insertRowsAtIndexPaths:self.indexPaths withRowAnimation:UITableViewRowAnimationTop];
-         } completion:^(BOOL finished) {
 
-         }];
-         */
          [self.tableView reloadData];
 
      } onFailure:^(NSError *error) {
@@ -91,7 +85,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    //return self.indexPaths[section].row;
     return 1; 
 }
 
@@ -124,10 +117,10 @@
     for (int i = 0; i < indexPath.section; ++i) {
         index += self.indexPaths[i].row;
     }
-    Model *weather = self.weatherForCities[index + indexPath.row];
-    NSString *day = [NSString localizedStringWithFormat:@"%lu", weather.hour];
+    Model *weather = self.weatherForOneDay[index + indexPath.row];
+    NSString *day = [NSString stringWithFormat:@"%lu", weather.hour];
     cell.weatherForDayLabel.text = day;
-    //[cell.weatherIconImageView  setImageWithURL:weather.image];
+    cell.weatherIconImageView.image = [UIImage imageNamed:weather.image]; ;
     cell.temperatureLable.text = [NSString stringWithFormat:@"%@ ℃", weather.temerature];
     return cell;
 }

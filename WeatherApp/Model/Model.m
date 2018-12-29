@@ -25,14 +25,14 @@
         _temerature = [numberFormatter numberFromString:numberInString];
         NSCalendar *calendar = [NSCalendar currentCalendar];
         NSDateComponents *hourComponent = [calendar components:NSCalendarUnitHour
-                                                      fromDate:_date];
-        NSUInteger firstDay = [hourComponent hour];
-        _hour = firstDay;
+                                                      fromDate:self.date];
+        NSUInteger hour = [hourComponent hour];
+
+        _hour = hour;
 
         NSArray *weatherIcon = [responseObject objectForKey:@"weather"];
         NSNumber *icon = [weatherIcon[0] objectForKey:@"icon"];
-        NSString *url = [NSString stringWithFormat:@"https://openweathermap.org/img/w/%@", icon];
-        _image = [NSURL URLWithString:url]; 
+        _image = [NSString stringWithFormat:@"%@", icon];
     }
     return self;
 }

@@ -11,5 +11,4 @@
 @property (nonatomic, weak) IBOutlet UIImageView *weatherIconImageView;
 @property (nonatomic, weak) IBOutlet UILabel *temperatureLable;
 
-//@property (nonatomic, weak) UIImage *image;
 @end

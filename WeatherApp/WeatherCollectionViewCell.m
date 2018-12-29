@@ -6,10 +6,5 @@
 #import "WeatherCollectionViewCell.h"
 
 @implementation WeatherCollectionViewCell
-/*
-- (void)setImage:(UIImage *)image
-{
-    self.weatherIconImageView.image = image;
-}
-*/
+
 @end
