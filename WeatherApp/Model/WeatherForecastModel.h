@@ -6,9 +6,9 @@
 #import <Foundation/Foundation.h>
 
 
-@interface Model : NSObject
+@interface WeatherForecastModel : NSObject
 @property (nonatomic, strong) NSDate *date;
-@property (nonatomic, strong) NSNumber *temerature;
+@property (nonatomic, assign) double temerature;
 @property (nonatomic, assign) NSUInteger hour;
 @property (nonatomic, strong) NSString *image;
 

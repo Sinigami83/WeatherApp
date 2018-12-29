@@ -5,16 +5,16 @@
 
 #import "WeatherForCitiesTableViewController.h"
 #import "ServerManager.h"
-#import "Model.h"
+#import "WeatherForecastModel.h"
 #import "WeatherCollectionViewCell.h"
 #import "WeatherTableViewCell.h"
 
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
-@property (nonatomic, strong) NSArray<Model *> *weatherForCities;
-@property (nonatomic, strong) NSArray<Model *> *weatherForOneDay;
+@property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForCities;
+@property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForOneDay;
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
-@property (nonatomic, weak) IBOutlet UITextField *cityNameTextField;
+@property (nonatomic, weak) IBOutlet UITextField *placeholderText;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
@@ -24,7 +24,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.tableView reloadData];
-    self.cityNameTextField.text = @"London";
+    self.placeholderText.text = @"London";
+    self.dateFormatter = [[NSDateFormatter alloc] init];
     [self find];
 }
 
@@ -38,12 +39,15 @@
 - (void)getWeatherFromServer
 {
     ServerManager *SM = [[ServerManager alloc] init];
-    [SM getWeatherWithCity:self.cityNameTextField.text
+    [SM getWeatherWithCity:self.placeholderText.text
                  onSuccess:^(NSArray *weathers) {
 
                      [self handleWeathersLoaded:weathers];
 
-                     [self.tableView reloadData];
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         [self.tableView reloadData];
+                     });
+
 
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
@@ -85,8 +89,8 @@
     for (int i = 0; i < section; ++i) {
         index += self.indexPaths[i].row;
     }
-    self.dateFormatter = [[NSDateFormatter alloc] init];
-    self.dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_GB"];
+
+    self.dateFormatter.locale = [NSLocale currentLocale];
     self.dateFormatter.dateFormat = @"dd-MM-yyyy";
     NSString *dateStr = [self.dateFormatter stringFromDate:self.weatherForCities[index].date];
     return dateStr;
@@ -126,11 +130,11 @@
     for (int i = 0; i < indexPath.section; ++i) {
         index += self.indexPaths[i].row;
     }
-    Model *weather = self.weatherForOneDay[index + indexPath.row];
+    WeatherForecastModel *weather = self.weatherForOneDay[index + indexPath.row];
     NSString *day = [NSString stringWithFormat:@"%lu", weather.hour];
     cell.weatherForDayLabel.text = day;
     cell.weatherIconImageView.image = [UIImage imageNamed:weather.image]; ;
-    cell.temperatureLable.text = [NSString stringWithFormat:@"%@ ℃", weather.temerature];
+    cell.temperatureLable.text = [NSString stringWithFormat:@"%.0f ℃", weather.temerature];
     return cell;
 }
 

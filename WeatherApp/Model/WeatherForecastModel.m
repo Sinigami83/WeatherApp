@@ -3,12 +3,12 @@
 //  Copyright © 2018 Home. All rights reserved.
 //
 
-#import "Model.h"
+#import "WeatherForecastModel.h"
 
-@interface Model()
+@interface WeatherForecastModel()
 @end
 
-@implementation Model
+@implementation WeatherForecastModel
 
 - (instancetype)initWithServerResponse:(NSDictionary *)responseObject
 {
@@ -22,7 +22,7 @@
         [numberFormatter setRoundingMode:NSNumberFormatterRoundUp];
         [numberFormatter setMaximumFractionDigits:0];
         NSString *numberInString = [numberFormatter stringFromNumber:temperature];
-        _temerature = [numberFormatter numberFromString:numberInString];
+        _temerature = numberInString.doubleValue;
         NSCalendar *calendar = [NSCalendar currentCalendar];
         NSDateComponents *hourComponent = [calendar components:NSCalendarUnitHour
                                                       fromDate:self.date];

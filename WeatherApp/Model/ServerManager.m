@@ -4,10 +4,11 @@
 //
 
 #import "ServerManager.h"
-#import "Model.h"
+#import "WeatherForecastModel.h"
 
 
 @interface ServerManager()
+@property (nonatomic, strong) NSURLSession *session;
 @end
 
 @implementation ServerManager
@@ -17,34 +18,18 @@
                  onFailure:(void(^)(NSError *error))failure
 {
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
+    self.session = [NSURLSession sessionWithConfiguration:sessionConfig];
     NSString *stringURL = [NSString stringWithFormat:@"https://api.openweathermap.org/data/2.5/forecast?appid=bb87c4e7d376b1ad20e1cd1683c0824d&q=%@&units=metric&type=like&lang=en", city];
     NSURL *url = [NSURL URLWithString:stringURL];
 
     NSURLSessionDataTask *dataTask =
-        [session dataTaskWithURL:url
+        [self.session dataTaskWithURL:url
                completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                   NSError *err;
-                   NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data
-                                                                                options:NSJSONReadingAllowFragments
-                                                                                  error:&err];
-                   NSLog(@"JSON: %@", responseJSON);
-                   if (error) {
-                       NSLog(@"ERROR!");
-                       return;
-                   }
 
-                   NSArray *weathers = [responseJSON objectForKey:@"list"];
-
-                   NSMutableArray<Model *> *weatherForCity = [[NSMutableArray alloc] init];
-
-                   for (NSDictionary *weather in weathers) {
-                       Model *row = [[Model alloc] initWithServerResponse:weather];
-                       [weatherForCity addObject:row];
-                   }
+                   NSArray *weathersForCity = [self handleWeathersLoaded:data];
 
                    if (success) {
-                       success(weatherForCity);
+                       success(weathersForCity);
                    }
 
                }];
@@ -55,4 +40,22 @@
 
 }
 
+- (NSArray *)handleWeathersLoaded:(NSData *)data
+{
+    NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:NSJSONReadingAllowFragments
+                                                                   error:NULL];
+    NSLog(@"JSON: %@", responseJSON);
+
+
+    NSArray *weathers = [responseJSON objectForKey:@"list"];
+
+    NSMutableArray<WeatherForecastModel *> *weatherForCity = [[NSMutableArray alloc] init];
+
+    for (NSDictionary *weather in weathers) {
+        WeatherForecastModel *row = [[WeatherForecastModel alloc] initWithServerResponse:weather];
+        [weatherForCity addObject:row];
+    }
+    return weatherForCity;
+}
 @end
