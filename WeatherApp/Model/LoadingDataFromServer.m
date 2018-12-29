@@ -3,15 +3,15 @@
 //  Copyright © 2018 Home. All rights reserved.
 //
 
-#import "ServerManager.h"
+#import "LoadingDataFromServer.h"
 #import "WeatherForecastModel.h"
 
 
-@interface ServerManager()
+@interface LoadingDataFromServer()
 @property (nonatomic, strong) NSURLSession *session;
 @end
 
-@implementation ServerManager
+@implementation LoadingDataFromServer
 
 - (void)getWeatherWithCity:(NSString *)city
                  onSuccess:(void(^)(NSArray *coutries))success

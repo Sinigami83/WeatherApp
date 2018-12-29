@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ServerManager : NSObject
+@interface LoadingDataFromServer : NSObject
 
 - (void)getWeatherWithCity:(NSString *)city
                  onSuccess:(void(^)(NSArray *coutries))success

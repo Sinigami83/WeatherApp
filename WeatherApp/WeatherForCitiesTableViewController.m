@@ -4,7 +4,7 @@
 //
 
 #import "WeatherForCitiesTableViewController.h"
-#import "ServerManager.h"
+#import "LoadingDataFromServer.h"
 #import "WeatherForecastModel.h"
 #import "WeatherCollectionViewCell.h"
 #import "WeatherTableViewCell.h"
@@ -38,7 +38,7 @@
 
 - (void)getWeatherFromServer
 {
-    ServerManager *SM = [[ServerManager alloc] init];
+    LoadingDataFromServer *SM = [[LoadingDataFromServer alloc] init];
     [SM getWeatherWithCity:self.placeholderText.text
                  onSuccess:^(NSArray *weathers) {
 
