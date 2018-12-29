@@ -8,6 +8,7 @@
 #import "WeatherForecastModel.h"
 #import "WeatherCollectionViewCell.h"
 #import "WeatherTableViewCell.h"
+#import "Section.h"
 
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
@@ -17,6 +18,7 @@
 @property (nonatomic, weak) IBOutlet UITextField *placeholderText;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSArray<Section *> *dataForPrint;
 @end
 
 @implementation WeatherForCitiesTableViewController
@@ -25,8 +27,38 @@
     [super viewDidLoad];
     [self.tableView reloadData];
     self.placeholderText.text = @"London";
+
     self.dateFormatter = [[NSDateFormatter alloc] init];
+    self.dateFormatter.locale = [NSLocale currentLocale];
+    self.dateFormatter.dateFormat = @"dd-MM-yyyy";
+
     [self find];
+}
+
+- (void)reloadData
+{
+    NSMutableArray *sections = [NSMutableArray array];
+    for (WeatherForecastModel *m in self.weatherForCities) {
+        Section *s = [[Section alloc] init];
+        s.title = [self.dateFormatter stringFromDate:m.date];
+        NSMutableArray *rows = [NSMutableArray array];
+        for (WeatherForecastModel *w in self.weatherForOneDay) {
+            SectionRow *row = [[SectionRow alloc] init];
+
+            row.temperature = w.temerature;
+            row.hour = w.hour;
+            row.image = w.image;
+            [rows addObject:row];
+        }
+        s.rows = rows;
+
+        [sections addObject:s];
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
+
 }
 
 #pragma mark - API
@@ -43,11 +75,7 @@
                  onSuccess:^(NSArray *weathers) {
 
                      [self handleWeathersLoaded:weathers];
-
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         [self.tableView reloadData];
-                     });
-
+                     [self reloadData];
 
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
@@ -90,8 +118,6 @@
         index += self.indexPaths[i].row;
     }
 
-    self.dateFormatter.locale = [NSLocale currentLocale];
-    self.dateFormatter.dateFormat = @"dd-MM-yyyy";
     NSString *dateStr = [self.dateFormatter stringFromDate:self.weatherForCities[index].date];
     return dateStr;
 }

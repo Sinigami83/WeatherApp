@@ -10,8 +10,7 @@
 #import "SectionRow.h"
 
 
-@interface Secion : NSObject
+@interface Section : NSObject
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<SectionRow *> *rows;
-
 @end

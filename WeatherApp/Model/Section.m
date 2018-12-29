@@ -3,8 +3,7 @@
 //  Copyright © 2018 Home. All rights reserved.
 //
 
-#import "Secion.h"
+#import "Section.h"
 
-@implementation Secion
-
+@implementation Section
 @end
