@@ -29,7 +29,6 @@
     self.placeholderText.text = @"London";
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
-    self.dateFormatter.locale = [NSLocale currentLocale];
     self.dateFormatter.dateFormat = @"dd-MM-yyyy";
 
     [self find];
