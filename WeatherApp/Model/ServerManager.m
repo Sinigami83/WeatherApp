@@ -4,37 +4,13 @@
 //
 
 #import "ServerManager.h"
-#import "AFNetworking.h"
 #import "Model.h"
 
 
 @interface ServerManager()
-@property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @end
 
 @implementation ServerManager
-
-+ (ServerManager *)sharedManager
-{
-    static ServerManager *manager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        manager = [[ServerManager alloc] init];
-    });
-
-    return manager;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        NSString *strURL = @"https://api.openweathermap.org/data/2.5/";
-        NSURL *url = [NSURL URLWithString:strURL];
-        self.sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:url];
-    }
-    return self;
-}
 
 - (void)getWeatherWithCity:(NSString *)city
                  onSuccess:(void(^)(NSArray *coutries))success
@@ -50,31 +26,43 @@
     //@"3",       @"cnt",
     nil];
 
-    [self.sessionManager
-     GET:@"forecast"
-     parameters:params
-     progress:nil
-     success:^(NSURLSessionTask *task, NSDictionary *responseObject) {
-        NSLog(@"JSON: %@", responseObject);
-        NSArray *weathers = [responseObject objectForKey:@"list"];
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
+    NSString *stringURL = [NSString stringWithFormat:@"https://api.openweathermap.org/data/2.5/forecast?appid=bb87c4e7d376b1ad20e1cd1683c0824d&q=%@&units=metric", city];
+    NSURL *url = [NSURL URLWithString:stringURL];
 
-        NSMutableArray<Model *> *weatherForCity = [[NSMutableArray alloc] init];
+    NSURLSessionDataTask *dataTask =
+        [session dataTaskWithURL:url
+               completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                   NSError *err;
+                   NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data
+                                                                                options:NSJSONReadingAllowFragments
+                                                                                  error:&err];
+                   NSLog(@"JSON: %@", responseJSON);
+                   if (error) {
+                       NSLog(@"ERROR!");
+                       return;
+                   }
 
-        for (NSDictionary *weather in weathers) {
-            Model *row = [[Model alloc] initWithServerResponse:weather];
-            [weatherForCity addObject:row];
-        }
+                   NSArray *weathers = [responseJSON objectForKey:@"list"];
 
-        if (success) {
-            success(weatherForCity);
-        }
+                   NSMutableArray<Model *> *weatherForCity = [[NSMutableArray alloc] init];
 
-        } failure:^(NSURLSessionTask *operation, NSError *error) {
-            if (failure) {
-                failure(error);
-            }
-            NSLog(@"Error: %@", error);
-        }];
+                   for (NSDictionary *weather in weathers) {
+                       Model *row = [[Model alloc] initWithServerResponse:weather];
+                       [weatherForCity addObject:row];
+                   }
+
+                   if (success) {
+                       success(weatherForCity);
+                   }
+
+               }];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [dataTask resume];
+    });
+
 }
 
 @end

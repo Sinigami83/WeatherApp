@@ -7,8 +7,6 @@
 
 @interface ServerManager : NSObject
 
-+ (ServerManager *)sharedManager;
-
 - (void)getWeatherWithCity:(NSString *)city
                  onSuccess:(void(^)(NSArray *coutries))success
                  onFailure:(void(^)(NSError *error))failure;

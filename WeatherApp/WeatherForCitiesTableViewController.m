@@ -6,7 +6,6 @@
 #import "WeatherForCitiesTableViewController.h"
 #import "ServerManager.h"
 #import "Model.h"
-#import "UIImageView+AFNetworking.h"
 #import "WeatherCollectionViewCell.h"
 
 
@@ -37,26 +36,30 @@
 
 - (void)getWeatherFromServer
 {
-    [[ServerManager sharedManager]
-     getWeatherWithCity:self.cityNameTextField.text
-     onSuccess:^(NSArray *coutries) {
-         self.weatherForCities = coutries;
+    ServerManager *SM = [[ServerManager alloc] init];
+    [SM getWeatherWithCity:self.cityNameTextField.text
+                 onSuccess:^(NSArray *coutries) {
 
-         self.indexPaths = [[NSMutableArray alloc] init];
-         NSDate *lastDate = self.weatherForCities[0].date;
-         for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
-             NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
-             if (ordererSet != NSOrderedSame) {
-                 [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
-                 ++section;
-                 row = 1;
-                 lastDate = self.weatherForCities[i].date;
-             } else {
-                 ++row;
-             }
-         }
+                     self.weatherForCities = coutries;
 
-         [self.tableView reloadData];
+                     self.indexPaths = [[NSMutableArray alloc] init];
+
+                     NSDate *lastDate = self.weatherForCities[0].date;
+
+                     for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
+
+                         NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
+                         if (ordererSet != NSOrderedSame) {
+                             [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+                             ++section;
+                             row = 1;
+                             lastDate = self.weatherForCities[i].date;
+                         } else {
+                             ++row;
+                         }
+                     }
+
+                     [self.tableView reloadData];
 
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
