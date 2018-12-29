@@ -39,32 +39,37 @@
 {
     ServerManager *SM = [[ServerManager alloc] init];
     [SM getWeatherWithCity:self.cityNameTextField.text
-                 onSuccess:^(NSArray *coutries) {
+                 onSuccess:^(NSArray *weathers) {
 
-                     self.weatherForCities = coutries;
-
-                     self.indexPaths = [[NSMutableArray alloc] init];
-
-                     NSDate *lastDate = self.weatherForCities[0].date;
-
-                     for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
-
-                         NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
-                         if (ordererSet != NSOrderedSame) {
-                             [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
-                             ++section;
-                             row = 1;
-                             lastDate = self.weatherForCities[i].date;
-                         } else {
-                             ++row;
-                         }
-                     }
+                     [self handleWeathersLoaded:weathers];
 
                      [self.tableView reloadData];
 
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
      }];
+}
+
+- (void)handleWeathersLoaded:(NSArray *)weathers
+{
+    self.weatherForCities = weathers;
+
+    self.indexPaths = [[NSMutableArray alloc] init];
+
+    NSDate *lastDate = self.weatherForCities[0].date;
+
+    for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
+
+        NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
+        if (ordererSet != NSOrderedSame) {
+            [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+            ++section;
+            row = 1;
+            lastDate = self.weatherForCities[i].date;
+        } else {
+            ++row;
+        }
+    }
 }
 
 #pragma mark - Table view data source
