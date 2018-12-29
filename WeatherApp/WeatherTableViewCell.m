@@ -6,8 +6,6 @@
 #import "WeatherTableViewCell.h"
 
 
-
 @implementation WeatherTableViewCell
-
 
 @end

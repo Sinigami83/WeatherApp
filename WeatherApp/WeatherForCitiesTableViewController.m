@@ -7,6 +7,7 @@
 #import "ServerManager.h"
 #import "Model.h"
 #import "WeatherCollectionViewCell.h"
+#import "WeatherTableViewCell.h"
 
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
@@ -115,6 +116,7 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    /*
     WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     NSUInteger index = 0;
     for (int i = 0; i < indexPath.section; ++i) {
@@ -125,6 +127,9 @@
     cell.weatherForDayLabel.text = day;
     cell.weatherIconImageView.image = [UIImage imageNamed:weather.image]; ;
     cell.temperatureLable.text = [NSString stringWithFormat:@"%@ ℃", weather.temerature];
+    return cell;
+    */
+    WeatherTableViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     return cell;
 }
 

@@ -10,5 +10,4 @@
 @property (nonatomic, weak) IBOutlet UILabel *weatherForDayLabel;
 @property (nonatomic, weak) IBOutlet UIImageView *weatherIconImageView;
 @property (nonatomic, weak) IBOutlet UILabel *temperatureLable;
-
 @end
