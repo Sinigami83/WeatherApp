@@ -38,27 +38,33 @@
 - (void)reloadData
 {
     NSMutableArray *sections = [NSMutableArray array];
-    for (WeatherForecastModel *m in self.weatherForCities) {
-        Section *s = [[Section alloc] init];
-        s.title = [self.dateFormatter stringFromDate:m.date];
-        NSMutableArray *rows = [NSMutableArray array];
-        for (WeatherForecastModel *w in self.weatherForOneDay) {
-            SectionRow *row = [[SectionRow alloc] init];
+    NSMutableArray *rows = [NSMutableArray array];
 
-            row.temperature = w.temerature;
-            row.hour = w.hour;
-            row.image = w.image;
-            [rows addObject:row];
+    NSDate *weatherDate = self.weatherForCities[0].date;
+    for (WeatherForecastModel *w in self.weatherForCities) {
+
+        NSComparisonResult result = [self compareTwoDate:weatherDate secondDate:w.date];
+        if (result != NSOrderedSame) {
+            Section *s = [[Section alloc] init];
+            s.title = [self.dateFormatter stringFromDate:weatherDate];
+            s.rows = rows;
+            [sections addObject:s];
+            weatherDate = w.date;
+            [rows removeAllObjects];
         }
-        s.rows = rows;
 
-        [sections addObject:s];
+        SectionRow *row = [[SectionRow alloc] init];
+        row.temperature = w.temerature;
+        row.hour = w.hour;
+        row.image = w.image;
+        [rows addObject:row];
     }
+
+    self.dataForPrint = sections;
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];
     });
-
 }
 
 #pragma mark - API
@@ -85,41 +91,18 @@
 - (void)handleWeathersLoaded:(NSArray *)weathers
 {
     self.weatherForCities = weathers;
-
-    self.indexPaths = [[NSMutableArray alloc] init];
-
-    NSDate *lastDate = self.weatherForCities[0].date;
-
-    for (int i = 0, section = 0, row = 1; i < [self.weatherForCities count]; ++i) {
-
-        NSComparisonResult ordererSet = [self compareTwoDate:lastDate secondDate:self.weatherForCities[i].date];
-        if (ordererSet != NSOrderedSame) {
-            [self.indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
-            ++section;
-            row = 1;
-            lastDate = self.weatherForCities[i].date;
-        } else {
-            ++row;
-        }
-    }
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.indexPaths count];
+    return [self.dataForPrint count];
 }
 
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSUInteger index = 0;
-    for (int i = 0; i < section; ++i) {
-        index += self.indexPaths[i].row;
-    }
-
-    NSString *dateStr = [self.dateFormatter stringFromDate:self.weatherForCities[index].date];
-    return dateStr;
+    return self.dataForPrint[section].title;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -129,38 +112,25 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    NSUInteger index = 0;
-    for (int i = 0; i < indexPath.section; ++i) {
-        index += self.indexPaths[i].row;
-    }
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    for (int i = 0; i < self.indexPaths[indexPath.section].row; ++i) {
-        [arr addObject:self.weatherForCities[index + i]];
-    }
-    self.weatherForOneDay = arr;
+    WeatherTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    [cell.collectionView reloadData];
     return cell;
-
 }
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return self.weatherForOneDay.count;
+    return self.dataForPrint[section].rows.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    NSUInteger index = 0;
-    for (int i = 0; i < indexPath.section; ++i) {
-        index += self.indexPaths[i].row;
-    }
-    WeatherForecastModel *weather = self.weatherForOneDay[index + indexPath.row];
-    NSString *day = [NSString stringWithFormat:@"%lu", weather.hour];
-    cell.weatherForDayLabel.text = day;
-    cell.weatherIconImageView.image = [UIImage imageNamed:weather.image]; ;
-    cell.temperatureLable.text = [NSString stringWithFormat:@"%.0f ℃", weather.temerature];
+    SectionRow *row = self.dataForPrint[indexPath.section].rows[indexPath.row];
+    NSString *hour = [NSString stringWithFormat:@"%lu", row.hour];
+    cell.weatherForDayLabel.text = hour;
+    cell.weatherIconImageView.image = [UIImage imageNamed:row.image]; ;
+    cell.temperatureLable.text = [NSString stringWithFormat:@"%.0f ℃", row.temperature];
     return cell;
 }
 
