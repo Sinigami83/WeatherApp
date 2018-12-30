@@ -25,13 +25,35 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.tableView reloadData];
+    //[self.tableView reloadData];
     self.placeholderText.text = @"London";
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateFormat = @"dd-MM-yyyy";
 
     [self find];
+}
+
+#pragma mark - API
+
+- (IBAction)find
+{
+    [self getWeatherFromServer];
+}
+
+- (void)getWeatherFromServer
+{
+    [[LoadingDataFromServer sharedManager]
+     getWeatherWithCity:self.placeholderText.text
+              onSuccess:^(NSArray *weathers) {
+
+        self.weatherForCities = weathers;
+
+        [self reloadData];
+
+     } onFailure:^(NSError *error) {
+          NSLog(@"Error %@", [error localizedDescription]);
+     }];
 }
 
 - (void)reloadData
@@ -61,33 +83,8 @@
 
     self.dataForPrint = sections;
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.tableView reloadData];
-    });
+    [self.tableView reloadData];
 }
-
-#pragma mark - API
-
-- (IBAction)find
-{
-    [self getWeatherFromServer];
-}
-
-- (void)getWeatherFromServer
-{
-    [[LoadingDataFromServer sharedManager]
-     getWeatherWithCity:self.placeholderText.text
-              onSuccess:^(NSArray *weathers) {
-
-                  self.weatherForCities = weathers;
-
-                  [self reloadData];
-
-     } onFailure:^(NSError *error) {
-          NSLog(@"Error %@", [error localizedDescription]);
-     }];
-}
-
 
 #pragma mark - Table view data source
 
@@ -113,18 +110,22 @@
     self.weatherForOneDay = self.dataForPrint[indexPath.section].rows;
     cell.numberSection = indexPath.row;
     [cell.collectionView reloadData];
+    NSLog(@"TableView endned");
     return cell;
 }
 
 #pragma mark - UICollectionViewDataSource
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    NSLog(@"weather for first time - %f. Count rows in section - %lu", self.weatherForOneDay[0].temperature, self.weatherForOneDay.count);
     return self.weatherForOneDay.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+    NSLog(@"weather for second time - %f. Count rows in section - %lu", self.weatherForOneDay[0].temperature, self.weatherForOneDay.count);
     SectionRow *row = self.weatherForOneDay[indexPath.row];
     NSString *hour = [NSString stringWithFormat:@"%lu", row.hour];
     cell.weatherForDayLabel.text = hour;

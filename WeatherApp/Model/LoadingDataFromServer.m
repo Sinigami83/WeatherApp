@@ -13,7 +13,6 @@
 
 @implementation LoadingDataFromServer
 
-
 + (LoadingDataFromServer *)sharedManager
 {
     static LoadingDataFromServer *manager = nil;
@@ -49,29 +48,34 @@
 
                    NSArray *weathersForCity = [self handleWeathersLoaded:data];
 
-                   if (success) {
-                       success(weathersForCity);
-                   }
+                   if (weathersForCity != nil) {
+                       if (success != nil) {
+                           dispatch_async(dispatch_get_main_queue(), ^{
+                               success(weathersForCity);
+                           });
+                       }
+                   } else {
+                        if (failure != nil) {
+                            failure(nil); // TODO pass error
+                        }
+                    }
 
-               }];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [dataTask resume];
-    });
-
+        }];
+    [dataTask resume];
 }
 
-- (NSArray *)handleWeathersLoaded:(NSData *)data
+- (nullable NSArray *)handleWeathersLoaded:(NSData *)data
 {
     NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data
                                                                  options:NSJSONReadingAllowFragments
                                                                    error:NULL];
-    NSLog(@"JSON: %@", responseJSON);
-
-
+    //NSLog(@"JSON: %@", responseJSON);
     NSArray *weathers = [responseJSON objectForKey:@"list"];
-
+    
     NSMutableArray<WeatherForecastModel *> *weatherForCity = [[NSMutableArray alloc] init];
+    if (weathers == nil) {
+        return nil;
+    }
 
     for (NSDictionary *weather in weathers) {
         WeatherForecastModel *row = [[WeatherForecastModel alloc] initWithServerResponse:weather];
