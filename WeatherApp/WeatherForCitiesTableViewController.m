@@ -11,7 +11,7 @@
 #import "Section.h"
 
 
-@interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
+@interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForCities;
 @property (nonatomic, strong) NSArray<SectionRow *> *weatherForOneDay;
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
@@ -25,7 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self.tableView reloadData];
+    [self.tableView reloadData];
     self.placeholderText.text = @"London";
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
@@ -107,30 +107,8 @@
 {
     WeatherTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
 
-    self.weatherForOneDay = self.dataForPrint[indexPath.section].rows;
-    cell.numberSection = indexPath.row;
+    cell.weatherForOneDay = self.dataForPrint[indexPath.section].rows;
     [cell.collectionView reloadData];
-    NSLog(@"TableView endned");
-    return cell;
-}
-
-#pragma mark - UICollectionViewDataSource
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    NSLog(@"weather for first time - %f. Count rows in section - %lu", self.weatherForOneDay[0].temperature, self.weatherForOneDay.count);
-    return self.weatherForOneDay.count;
-}
-
-- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    NSLog(@"weather for second time - %f. Count rows in section - %lu", self.weatherForOneDay[0].temperature, self.weatherForOneDay.count);
-    SectionRow *row = self.weatherForOneDay[indexPath.row];
-    NSString *hour = [NSString stringWithFormat:@"%lu", row.hour];
-    cell.weatherForDayLabel.text = hour;
-    cell.weatherIconImageView.image = [UIImage imageNamed:row.image]; ;
-    cell.temperatureLable.text = [NSString stringWithFormat:@"%.0f ℃", row.temperature];
     return cell;
 }
 

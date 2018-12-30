@@ -4,10 +4,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "SectionRow.h"
 
 @interface WeatherTableViewCell : UITableViewCell
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
-@property (nonatomic, assign) NSUInteger numberSection;
+@property (nonatomic, strong) NSArray<SectionRow *> *weatherForOneDay;
+
+- (void)setCollectionView:(UICollectionView *)collectionView;
 @end
 
