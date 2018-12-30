@@ -7,6 +7,7 @@
 
 
 @interface WeatherTableViewCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
+@property (nonatomic, assign) NSUInteger numberSection;
 @end
 

@@ -13,7 +13,7 @@
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForCities;
-@property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForOneDay;
+@property (nonatomic, strong) NSArray<SectionRow *> *weatherForOneDay;
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, weak) IBOutlet UITextField *placeholderText;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
@@ -75,22 +75,19 @@
 
 - (void)getWeatherFromServer
 {
-    LoadingDataFromServer *SM = [[LoadingDataFromServer alloc] init];
-    [SM getWeatherWithCity:self.placeholderText.text
-                 onSuccess:^(NSArray *weathers) {
+    [[LoadingDataFromServer sharedManager]
+     getWeatherWithCity:self.placeholderText.text
+              onSuccess:^(NSArray *weathers) {
 
-                     [self handleWeathersLoaded:weathers];
-                     [self reloadData];
+                  self.weatherForCities = weathers;
+
+                  [self reloadData];
 
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
      }];
 }
 
-- (void)handleWeathersLoaded:(NSArray *)weathers
-{
-    self.weatherForCities = weathers;
-}
 
 #pragma mark - Table view data source
 
@@ -112,6 +109,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     WeatherTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+
+    self.weatherForOneDay = self.dataForPrint[indexPath.section].rows;
+    cell.numberSection = indexPath.row;
     [cell.collectionView reloadData];
     return cell;
 }
@@ -119,13 +119,13 @@
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return self.dataForPrint[section].rows.count;
+    return self.weatherForOneDay.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     WeatherCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    SectionRow *row = self.dataForPrint[indexPath.section].rows[indexPath.row];
+    SectionRow *row = self.weatherForOneDay[indexPath.row];
     NSString *hour = [NSString stringWithFormat:@"%lu", row.hour];
     cell.weatherForDayLabel.text = hour;
     cell.weatherIconImageView.image = [UIImage imageNamed:row.image]; ;
