@@ -6,8 +6,8 @@
 #import "WeatherTableViewCell.h"
 #import "WeatherCollectionViewCell.h"
 
-@interface WeatherTableViewCell () <UICollectionViewDelegate, UICollectionViewDataSource>
 
+@interface WeatherTableViewCell () <UICollectionViewDelegate, UICollectionViewDataSource>
 @end
 
 

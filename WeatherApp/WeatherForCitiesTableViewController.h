@@ -5,6 +5,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WeatherForCitiesTableViewController : UIViewController
 
+@interface WeatherForCitiesTableViewController : UIViewController
 @end

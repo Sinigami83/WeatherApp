@@ -16,7 +16,6 @@
 + (LoadingDataFromServer *)sharedManager
 {
     static LoadingDataFromServer *manager = nil;
-
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[LoadingDataFromServer alloc] init];
@@ -43,24 +42,21 @@
     NSURL *url = [NSURL URLWithString:stringURL];
 
     NSURLSessionDataTask *dataTask =
-        [self.session dataTaskWithURL:url
-               completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-
-                   NSArray *weathersForCity = [self handleWeathersLoaded:data];
-
-                   if (weathersForCity != nil) {
-                       if (success != nil) {
-                           dispatch_async(dispatch_get_main_queue(), ^{
-                               success(weathersForCity);
-                           });
-                       }
-                   } else {
+    [self.session dataTaskWithURL:url
+                completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                    NSArray *weathersForCity = [self handleWeathersLoaded:data];
+                    if (weathersForCity != nil) {
+                        if (success != nil) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                success(weathersForCity);
+                            });
+                        }
+                    } else {
                         if (failure != nil) {
-                            failure(nil); // TODO pass error
+                            failure(nil);
                         }
                     }
-
-        }];
+                }];
     [dataTask resume];
 }
 
@@ -69,7 +65,6 @@
     NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data
                                                                  options:NSJSONReadingAllowFragments
                                                                    error:NULL];
-    //NSLog(@"JSON: %@", responseJSON);
     NSArray *weathers = [responseJSON objectForKey:@"list"];
     
     NSMutableArray<WeatherForecastModel *> *weatherForCity = [[NSMutableArray alloc] init];
@@ -83,4 +78,5 @@
     }
     return weatherForCity;
 }
+
 @end

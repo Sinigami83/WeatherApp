@@ -5,8 +5,6 @@
 
 #import "WeatherForecastModel.h"
 
-@interface WeatherForecastModel()
-@end
 
 @implementation WeatherForecastModel
 
@@ -23,11 +21,11 @@
         [numberFormatter setMaximumFractionDigits:0];
         NSString *numberInString = [numberFormatter stringFromNumber:temperature];
         _temerature = numberInString.doubleValue;
+        
         NSCalendar *calendar = [NSCalendar currentCalendar];
         NSDateComponents *hourComponent = [calendar components:NSCalendarUnitHour
                                                       fromDate:self.date];
         NSUInteger hour = [hourComponent hour];
-
         _hour = hour;
 
         NSArray *weatherIcon = [responseObject objectForKey:@"weather"];

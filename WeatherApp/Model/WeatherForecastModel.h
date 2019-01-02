@@ -7,11 +7,11 @@
 
 
 @interface WeatherForecastModel : NSObject
+
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, assign) double temerature;
 @property (nonatomic, assign) NSUInteger hour;
 @property (nonatomic, strong) NSString *image;
-
 - (instancetype)initWithServerResponse:(NSDictionary *)responseObject;
 
 @end

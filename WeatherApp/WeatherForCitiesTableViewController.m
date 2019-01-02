@@ -6,31 +6,30 @@
 #import "WeatherForCitiesTableViewController.h"
 #import "LoadingDataFromServer.h"
 #import "WeatherForecastModel.h"
-#import "WeatherCollectionViewCell.h"
 #import "WeatherTableViewCell.h"
 #import "Section.h"
 
 
 @interface WeatherForCitiesTableViewController () <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForCities;
-@property (nonatomic, strong) NSArray<SectionRow *> *weatherForOneDay;
+
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, weak) IBOutlet UITextField *placeholderText;
-@property (nonatomic, strong) NSMutableArray<NSIndexPath *> *indexPaths;
-@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSArray<WeatherForecastModel *> *weatherForCities;
 @property (nonatomic, strong) NSArray<Section *> *dataForPrint;
+@property (nonatomic, strong) NSArray<SectionRow *> *weatherForOneDay;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+
 @end
 
 @implementation WeatherForCitiesTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     [self.tableView reloadData];
     self.placeholderText.text = @"London";
-
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateFormat = @"dd-MM-yyyy";
-
     [self find];
 }
 
@@ -46,11 +45,8 @@
     [[LoadingDataFromServer sharedManager]
      getWeatherWithCity:self.placeholderText.text
               onSuccess:^(NSArray *weathers) {
-
         self.weatherForCities = weathers;
-
         [self reloadData];
-
      } onFailure:^(NSError *error) {
           NSLog(@"Error %@", [error localizedDescription]);
      }];
@@ -63,7 +59,6 @@
 
     NSDate *weatherDate = self.weatherForCities[0].date;
     for (WeatherForecastModel *w in self.weatherForCities) {
-
         NSComparisonResult result = [self compareTwoDate:weatherDate secondDate:w.date];
         if (result != NSOrderedSame) {
             Section *s = [[Section alloc] init];
@@ -73,16 +68,13 @@
             weatherDate = w.date;
             [rows removeAllObjects];
         }
-
         SectionRow *row = [[SectionRow alloc] init];
         row.temperature = w.temerature;
         row.hour = w.hour;
         row.image = w.image;
         [rows addObject:row];
     }
-
     self.dataForPrint = sections;
-
     [self.tableView reloadData];
 }
 
@@ -106,7 +98,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     WeatherTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-
     cell.weatherForOneDay = self.dataForPrint[indexPath.section].rows;
     [cell.collectionView reloadData];
     return cell;
@@ -128,8 +119,7 @@
 {
     NSCalendar* calendar = [NSCalendar currentCalendar];
     NSCalendarUnit flags = NSCalendarUnitDay;
-    NSDateComponents *daysComponents = [calendar components:flags
-                                                   fromDate:date];
+    NSDateComponents *daysComponents = [calendar components:flags fromDate:date];
     return daysComponents;
 }
 

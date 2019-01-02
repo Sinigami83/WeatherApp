@@ -6,5 +6,4 @@
 #import "WeatherCollectionViewCell.h"
 
 @implementation WeatherCollectionViewCell
-
 @end
